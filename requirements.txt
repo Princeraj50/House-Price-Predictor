@@ -4,3 +4,4 @@ pandas
 numpy
 matplotlib
 uvicorn
+gunicorn
