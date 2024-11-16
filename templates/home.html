@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boston House Price Prediction</title>
+    <link href='https://fonts.googleapis.com/css?family=Pacifico' rel='stylesheet'>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300' rel='stylesheet'>
+    <style>
+        @keyframes gradient {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        body {
+            font-family: 'Open Sans Condensed', sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(270deg, #ff7e5f, #feb47b, #86a8e7, #7f7fd5);
+            background-size: 800% 800%;
+            animation: gradient 15s ease infinite;
+        }
+        .login {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            max-width: 800px;
+            width: 100%;
+        }
+        h1 {
+            font-family: 'Pacifico', cursive;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        form {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        .form-group {
+            width: 30%;
+            margin-bottom: 10px;
+            text-align: left;
+        }
+        label, .note {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: bold;
+        }
+        .note {
+            font-size: 12px;
+            color: #888;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+        .btn {
+            padding: 12px;
+            border-radius: 6px;
+            border: none;
+            background: #5cb85c;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 100%;
+            margin-top: 20px;
+        }
+        .btn:hover { background: #4cae4c; }
+        .prediction-text {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #d9534f;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="login">
+        <h1>Boston House Price Prediction</h1>
+        <form action="{{ url_for('predict') }}" method="post">
+            <div class="form-group">
+                <label for="CRIM">Crime Rate</label>
+                <span class="note">0.028 to 15</span>
+                <input type="text" id="CRIM" name="CRIM" required>
+            </div>
+            <div class="form-group">
+                <label for="ZN">Percentage of Land Zoned for Lots</label>
+                <span class="note">0.0 to 80.0</span>
+                <input type="text" id="ZN" name="ZN" required>
+            </div>
+            <div class="form-group">
+                <label for="INDUS">Non-Retail Business Land by Percent</label>
+                <span class="note">2 to 22</span>
+                <input type="text" id="INDUS" name="INDUS" required>
+            </div>
+            <div class="form-group">
+                <label for="CHAS">Charles River</label>
+                <span class="note">0.0 or 1.0</span>
+                <input type="text" id="CHAS" name="CHAS" required>
+            </div>
+            <div class="form-group">
+                <label for="NOX">NOx Levels</label>
+                <span class="note">0.4 to 0.7</span>
+                <input type="text" id="NOX" name="NOX" required>
+            </div>
+            <div class="form-group">
+                <label for="RM">Rooms per Dwelling</label>
+                <span class="note">5 to 7.5</span>
+                <input type="text" id="RM" name="RM" required>
+            </div>
+            <div class="form-group">
+                <label for="Age">Older Homes Percent in Area</label>
+                <span class="note">17 to 100.0</span>
+                <input type="text" id="Age" name="Age" required>
+            </div>
+            <div class="form-group">
+                <label for="DIS">Distance to Work</label>
+                <span class="note">1.5 to 7.5</span>
+                <input type="text" id="DIS" name="DIS" required>
+            </div>
+            <div class="form-group">
+                <label for="RAD">Highway Access</label>
+                <span class="note">2.0 to 24.0</span>
+                <input type="text" id="RAD" name="RAD" required>
+            </div>
+            <div class="form-group">
+                <label for="TAX">Property-Tax Rate per [$/10k]</label>
+                <span class="note">222.0 to 666.0</span>
+                <input type="text" id="TAX" name="TAX" required>
+            </div>
+            <div class="form-group">
+                <label for="PTRATIO">Pupil-Teacher Ratio</label>
+                <span class="note">15 to 21.0</span>
+                <input type="text" id="PTRATIO" name="PTRATIO" required>
+            </div>
+            <div class="form-group">
+                <label for="B">Black Population</label>
+                <span class="note">85 to 390</span>
+                <input type="text" id="B" name="B" required>
+            </div>
+            <div class="form-group">
+                <label for="LSTAT">Lower Status of the Population</label>
+                <span class="note">4 to 25</span>
+                <input type="text" id="LSTAT" name="LSTAT" required>
+            </div>
+            <button type="submit" class="btn">Predict</button>
+        </form>
+        <div class="prediction-text">
+            {{ prediction_text }}
+        </div>
+    </div>
+</body>
+</html>
