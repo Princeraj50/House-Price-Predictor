@@ -1,4 +1,4 @@
-![AdobeStock_464438353](https://github.com/user-attachments/assets/a5e06b23-8ea5-47fb-b6ca-151098bb658e)
+![AdobeStock_464438353](https://github.com/user-attachments/assets/05ffe20a-dba4-4903-943b-e689c3b7b38b)
 # Boston House Price Prediction
 
 **[Deployed URL](https://house-price-predictor-152k.onrender.com/predict)**
@@ -40,7 +40,7 @@ For more information, visit the [UCI Machine Learning Repository](https://archiv
 - `app.py`: Flask application for serving the predictions.
 - `wsgi.py`: Entry point for Gunicorn.
 - `requirements.txt`: List of dependencies.
-- `Android.apk`: **<span style="color: #d9534f;">Android app for the project.</span>**
+- **`Android.apk`: <span style="color: red;">Android app for the project.</span>**
 - `README.md`: Project documentation.
 
 ## Installation
