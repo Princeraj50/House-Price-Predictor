@@ -1,7 +1,7 @@
 ![AdobeStock_464438353](https://github.com/user-attachments/assets/05ffe20a-dba4-4903-943b-e689c3b7b38b)
 # Boston House Price Prediction
 
-**[Deployed URL](https://house-price-predictor-152k.onrender.com/predict)**
+**[Deployed URL](https://house-price-predictor-152k.onrender.com)**
 
 This repository contains an end-to-end machine learning project on predicting house prices in Boston. The project covers steps from Exploratory Data Analysis (EDA), data cleaning, model building, saving the model as a pickle file, creating a front-end using HTML, and deploying it on the web using Render.
 
@@ -75,7 +75,7 @@ For more information, visit the [UCI Machine Learning Repository](https://archiv
 
 ## Deployment
 
-The model is deployed on Render. You can access it [here](https://house-price-predictor-152k.onrender.com/predict).
+The model is deployed on Render. You can access it [here](https://house-price-predictor-152k.onrender.com).
 
 ## License
 
