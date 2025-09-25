@@ -245,3 +245,96 @@ app = graph.compile()
 input_state = {"query": "What is LangGraph?", "documents": [], "answer": ""}
 result = app.invoke(input_state)
 print(result["answer"])
+
+
+
+
+
+
+
+To implement a Human-in-the-Loop (HITL) interrupt step in LangGraph for agentic AI workflows, you can use LangGraph’s built-in support for conditional branching and asynchronous pauses. Here's a complete example that shows how to:
+
+- Interrupt the agent flow for human review.
+- Resume execution after human input.
+- Use LangGraph’s `pause` and `resume` mechanics.
+
+---
+
+### 🧠 LangGraph HITL Interrupt Example
+
+```python
+from langgraph.graph import StateGraph, END, State
+from typing import TypedDict, Literal, Union
+from langchain.llms import OpenAI
+
+# --- Define state ---
+class AgentState(TypedDict):
+    query: str
+    documents: list
+    answer: str
+    status: Literal["pending", "approved", "rejected"]
+
+# --- LLM setup ---
+llm = OpenAI(model="gpt-4")
+
+# --- Node: Retrieve documents ---
+def retrieve_documents(state: AgentState) -> AgentState:
+    # Simulate retrieval
+    docs = ["LangGraph is a library for building stateful agents."]
+    return {**state, "documents": docs}
+
+# --- Node: Generate answer ---
+def generate_answer(state: AgentState) -> AgentState:
+    context = "\n".join(state["documents"])
+    prompt = f"Answer based on context:\n{context}\n\nQuestion: {state['query']}"
+    answer = llm.invoke(prompt)
+    return {**state, "answer": answer, "status": "pending"}
+
+# --- Node: Interrupt for HITL ---
+def interrupt_for_review(state: AgentState) -> Union[str, State]:
+    print(f"\n🔍 Human Review Needed:\nAnswer: {state['answer']}")
+    print("Waiting for human approval...")
+
+    # Pause execution and wait for external resume
+    return State(status="pending")
+
+# --- Node: Resume after HITL ---
+def resume_after_review(state: AgentState) -> str:
+    if state["status"] == "approved":
+        return END
+    elif state["status"] == "rejected":
+        print("Answer rejected. Re-generating...")
+        return "generate"
+    else:
+        return "interrupt"
+
+# --- Build LangGraph ---
+graph = StateGraph(AgentState)
+graph.add_node("retrieve", retrieve_documents)
+graph.add_node("generate", generate_answer)
+graph.add_node("interrupt", interrupt_for_review)
+graph.add_conditional_edges("interrupt", resume_after_review)
+graph.set_entry_point("retrieve")
+graph.add_edge("retrieve", "generate")
+graph.add_edge("generate", "interrupt")
+
+app = graph.compile()
+
+# --- Run the graph ---
+initial_state = {"query": "What is LangGraph?", "documents": [], "answer": "", "status": "pending"}
+interrupted = app.invoke(initial_state)
+
+# Simulate human approval
+interrupted["status"] = "approved"
+final = app.invoke(interrupted)
+print(f"\n✅ Final Answer: {final['answer']}")
+```
+
+---
+
+### 🧩 Key Concepts
+- `interrupt_for_review` pauses the graph and returns a `State(status="pending")`.
+- You resume manually by updating the state and invoking again.
+- Conditional edges route based on `status`: `"approved"` → END, `"rejected"` → regenerate.
+
+This pattern is ideal for agentic flows where HITL is needed for compliance, safety, or subjective judgment. Want to plug this into a LangGraph ReAct loop or add Slack-based approval? I can scaffold that next.
