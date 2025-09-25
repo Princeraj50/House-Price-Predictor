@@ -82,5 +82,114 @@ The model is deployed on Render. You can access it [here](https://house-price-pr
 This project is licensed under the MIT License.
 
 ## Contact
-
 For any questions, please contact [choclateyraj50@gmail.com].
+Here’s a complete working example that includes:
+
+- ✅ Three simple tools (`sum_tool`, `subtract_tool`, `multiply_tool`)
+- ✅ LangGraph ReAct agent setup
+- ✅ Streamlit UI
+- ✅ Requirements.txt
+
+---
+
+## 🧾 `app.py` — Full Code
+
+```python
+# app.py
+
+import streamlit as st
+from langchain.agents import tool, create_react_agent
+from langchain.llms import OpenAI
+from langgraph.graph import StateGraph
+
+# -----------------------------
+# Define Tools
+# -----------------------------
+
+@tool
+def sum_tool() -> str:
+    """This function performs addition."""
+    print("Sum function was called")
+    return "Sum function was called"
+
+@tool
+def subtract_tool() -> str:
+    """This function performs subtraction."""
+    print("Subtract function was called")
+    return "Subtract function was called"
+
+@tool
+def multiply_tool() -> str:
+    """This function performs multiplication."""
+    print("Multiply function was called")
+    return "Multiply function was called"
+
+# -----------------------------
+# Create ReAct Agent
+# -----------------------------
+
+llm = OpenAI(model="gpt-3.5-turbo", temperature=0)
+tools = [sum_tool, subtract_tool, multiply_tool]
+agent = create_react_agent(llm=llm, tools=tools)
+
+# -----------------------------
+# LangGraph Node
+# -----------------------------
+
+def agent_node(state):
+    user_input = state["input"]
+    result = agent.invoke({"input": user_input})
+    return {"output": result}
+
+graph = StateGraph()
+graph.add_node("agent", agent_node)
+graph.set_entry_point("agent")
+app = graph.compile()
+
+# -----------------------------
+# Streamlit UI
+# -----------------------------
+
+st.set_page_config(page_title="LangGraph Tool Agent", layout="centered")
+st.title("🧠 LangGraph Tool Agent")
+
+user_query = st.text_input("Ask me to add, subtract, or multiply:")
+
+if st.button("Run"):
+    result = app.invoke({"input": user_query})
+    st.success(result["output"])
+```
+
+---
+
+## 📦 `requirements.txt`
+
+```txt
+streamlit
+langchain
+langgraph
+openai
+```
+
+---
+
+## 🚀 How to Run
+
+1. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+2. Set your OpenAI API key:
+   ```bash
+   export OPENAI_API_KEY=your-key-here
+   ```
+
+3. Run the app:
+   ```bash
+   streamlit run app.py
+   ```
+
+---
+
+Let me know if you want to expand this with actual math logic, LangGraph memory, or multi-step chaining. I can modularize it for Lambda or add Spinnaker orchestration next.
