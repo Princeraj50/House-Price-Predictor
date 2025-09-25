@@ -193,3 +193,55 @@ openai
 ---
 
 Let me know if you want to expand this with actual math logic, LangGraph memory, or multi-step chaining. I can modularize it for Lambda or add Spinnaker orchestration next.
+
+
+
+
+from langchain.tools import Tool
+from langchain.llms import OpenAI
+from langgraph.graph import StateGraph
+from typing import TypedDict, List
+
+# --- Setup your retriever and LLM ---
+retriever = my_rag.retriever  # Your existing retriever
+llm = OpenAI(model="gpt-4")   # Or any other LLM you prefer
+
+# --- Wrap retriever as a LangChain Tool ---
+retriever_tool = Tool.from_function(
+    name="document_retriever",
+    description="Retrieves relevant documents based on a user query.",
+    func=lambda query: retriever.get_relevant_documents(query)
+)
+
+# --- Define LangGraph state ---
+class RAGState(TypedDict):
+    query: str
+    documents: List[str]
+    answer: str
+
+# --- Node: Retrieve documents ---
+def retrieve_documents(state: RAGState) -> RAGState:
+    query = state["query"]
+    docs = retriever_tool.run(query)
+    return {**state, "documents": docs}
+
+# --- Node: Answer with LLM ---
+def answer_with_llm(state: RAGState) -> RAGState:
+    context = "\n".join([doc.page_content for doc in state["documents"]])
+    prompt = f"Answer the question based on context:\n{context}\n\nQuestion: {state['query']}"
+    answer = llm.invoke(prompt)
+    return {**state, "answer": answer}
+
+# --- Build LangGraph ---
+graph = StateGraph(RAGState)
+graph.add_node("retrieve", retrieve_documents)
+graph.add_node("answer", answer_with_llm)
+graph.set_entry_point("retrieve")
+graph.add_edge("retrieve", "answer")
+graph.set_finish_point("answer")
+app = graph.compile()
+
+# --- Run the graph ---
+input_state = {"query": "What is LangGraph?", "documents": [], "answer": ""}
+result = app.invoke(input_state)
+print(result["answer"])
